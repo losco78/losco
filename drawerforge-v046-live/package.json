@@ -1,0 +1,17 @@
+{
+  "name": "drawerforge",
+  "private": true,
+  "version": "0.4.6",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "manifold-3d": "3.5.1",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "7.1.7"
+  }
+}
