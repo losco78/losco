@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111827" />
+  <title>DrawerForge 0.4.6</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="locked">
+<div id="pinGate" class="pinGate" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+  <form id="pinForm" class="pinCard">
+    <div class="brandMark pinLogo">DF</div>
+    <span class="eyebrow">ACCESSO RISERVATO</span>
+    <h1 id="pinTitle">DrawerForge</h1>
+    <p>Inserisci il PIN per accedere al configuratore.</p>
+    <label><span>PIN</span><input id="pinInput" inputmode="numeric" autocomplete="one-time-code" maxlength="8" type="password" autofocus></label>
+    <button class="primary wideButton" type="submit">Accedi</button>
+    <div id="pinError" class="pinError" aria-live="polite"></div>
+  </form>
+</div>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="brandMark">DF</div><div><strong>DrawerForge</strong><span>Parametric drawer builder</span></div></div>
+  <div class="headerActions"><button id="reset" class="ghost">Ripristina</button><button id="downloadDrawerTop" class="primary">Scarica cassetto STL</button></div>
+</header>
+<section class="workspace">
+  <aside class="panel controls">
+    <div class="panelTitle"><div><span class="eyebrow">CONFIGURAZIONE</span><h1>Il tuo cassetto</h1></div><span class="version">V0.4.6</span></div>
+    <div id="controls"></div>
+  </aside>
+  <section class="viewer">
+    <div class="viewerToolbar"><div id="viewModes" class="segmented"></div><div id="fitBadge" class="fitBadge"><span class="dot"></span><span></span></div></div>
+    <div id="canvasWrap" class="canvasWrap"><div class="canvasHint">Trascina per ruotare · rotella per zoom</div><div class="featureTag">V0.4.6 · maniglie funzionali · colori preview · overlap verticale</div></div>
+  </section>
+  <aside class="panel summary" id="summary"><span class="eyebrow">SOLID ENGINE</span><h2>Avvio…</h2></aside>
+</section>
+</div>
+<script>
+(() => {
+  const PIN_HASH = 'ff641dab77828ef509ed6cafa6e79dc6c7fb4dca8a217750272e96d7203d2491';
+  const key = 'drawerforge_pin_ok_v046';
+  const gate = document.getElementById('pinGate');
+  const form = document.getElementById('pinForm');
+  const input = document.getElementById('pinInput');
+  const error = document.getElementById('pinError');
+  const unlock = () => {
+    document.body.classList.remove('locked');
+    gate.hidden = true;
+  };
+  if (sessionStorage.getItem(key) === '1') unlock();
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new TextEncoder().encode(input.value.trim());
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    const hash = Array.from(new Uint8Array(digest)).map(x => x.toString(16).padStart(2, '0')).join('');
+    if (hash === PIN_HASH) {
+      sessionStorage.setItem(key, '1');
+      error.textContent = '';
+      unlock();
+    } else {
+      error.textContent = 'PIN non corretto';
+      input.select();
+    }
+  });
+})();
+</script>
+<script type="module" src="/src/app.js"></script>
+</body>
+</html>
